@@ -17,7 +17,7 @@ RUN set -x \
          bash bind-tools coreutils openssl uuidgen wget xl2tpd iptables iptables-legacy \
          iproute2 libcap-ng libcurl libevent linux-pam musl nspr nss nss-tools openrc \
          bison flex gcc make libc-dev bsd-compat-headers linux-pam-dev \
-         nss-dev libcap-ng-dev libevent-dev curl-dev nspr-dev \
+         nss-dev libcap-ng-dev libevent-dev curl-dev nspr-dev curl \
     && cd /sbin \
     && for fn in iptables iptables-save iptables-restore; do ln -fs xtables-legacy-multi "$fn"; done \
     && cd /opt/src \
@@ -42,8 +42,15 @@ RUN wget -t 3 -T 30 -nv -O /opt/src/ikev2.sh https://github.com/hwdsl2/setup-ips
     && chmod +x /opt/src/ikev2.sh \
     && ln -s /opt/src/ikev2.sh /usr/bin
 
-COPY ./run.sh /opt/src/run.sh
-RUN chmod 755 /opt/src/run.sh
+COPY ./run.sh ./vless.sh ./vless_config_template.sh /opt/src/
+RUN chmod 755 /opt/src/run.sh \
+    && chmod 755 /opt/src/vless.sh \
+    && chmod 755 /opt/src/vless_config_template.sh
+
+# VLESS provider sing-box
+COPY --from=ghcr.io/sagernet/sing-box /usr/local/bin/sing-box /bin/sing-box
+COPY --from=ghcr.io/tarampampam/mustpl:0.1.1 /bin/mustpl /bin/mustpl
+
 EXPOSE 500/udp 4500/udp
 CMD ["/opt/src/run.sh"]
 
@@ -52,13 +59,13 @@ ARG VERSION
 ARG VCS_REF
 ENV IMAGE_VER=$BUILD_DATE
 
-LABEL maintainer="Lin Song <linsongui@gmail.com>" \
+LABEL maintainer="Johnny White (easty)" \
     org.opencontainers.image.created="$BUILD_DATE" \
     org.opencontainers.image.version="$VERSION" \
     org.opencontainers.image.revision="$VCS_REF" \
-    org.opencontainers.image.authors="Lin Song <linsongui@gmail.com>" \
-    org.opencontainers.image.title="IPsec VPN Server on Docker" \
-    org.opencontainers.image.description="Docker image to run an IPsec VPN server, with IPsec/L2TP, Cisco IPsec and IKEv2." \
-    org.opencontainers.image.url="https://github.com/hwdsl2/docker-ipsec-vpn-server" \
-    org.opencontainers.image.source="https://github.com/hwdsl2/docker-ipsec-vpn-server" \
-    org.opencontainers.image.documentation="https://github.com/hwdsl2/docker-ipsec-vpn-server"
+    org.opencontainers.image.authors="Johnny White (easty)" \
+    org.opencontainers.image.title="IPsec VPN Server to VLESS on Docker" \
+    org.opencontainers.image.description="Docker image to run an IPsec VPN server, with IPsec/L2TP, Cisco IPsec and IKEv2 and convert traffic to vless vpn." \
+    org.opencontainers.image.url="https://github.com/eastygh/l2tp-to-vless" \
+    org.opencontainers.image.source="https://github.com/eastygh/l2tp-to-vless" \
+    org.opencontainers.image.documentation="https://github.com/eastygh/l2tp-to-vless"

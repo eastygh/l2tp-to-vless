@@ -566,32 +566,21 @@ ipf='iptables -I FORWARD'
 ipp='iptables -t nat -I POSTROUTING'
 res='RELATED,ESTABLISHED'
 modprobe -q ip_tables 2>/dev/null
-if ! iptables -t nat -C POSTROUTING -s "$L2TP_NET" -o "$NET_IFACE" -j MASQUERADE 2>/dev/null; then
-  $ipi 1 -p udp --dport 1701 -m policy --dir in --pol none -j DROP
-  $ipi 2 -m conntrack --ctstate INVALID -j DROP
-  $ipi 3 -m conntrack --ctstate "$res" -j ACCEPT
-  $ipi 4 -p udp -m multiport --dports 500,4500 -j ACCEPT
-  $ipi 5 -p udp --dport 1701 -m policy --dir in --pol ipsec -j ACCEPT
-  $ipi 6 -p udp --dport 1701 -j DROP
-  $ipf 1 -m conntrack --ctstate INVALID -j DROP
-  $ipf 2 -i "$NET_IFACE" -o ppp+ -m conntrack --ctstate "$res" -j ACCEPT
-  $ipf 3 -i ppp+ -o "$NET_IFACE" -j ACCEPT
-  $ipf 4 -i ppp+ -o ppp+ -j ACCEPT
-  $ipf 5 -i "$NET_IFACE" -d "$XAUTH_NET" -m conntrack --ctstate "$res" -j ACCEPT
-  $ipf 6 -s "$XAUTH_NET" -o "$NET_IFACE" -j ACCEPT
-  $ipf 7 -s "$XAUTH_NET" -o ppp+ -j ACCEPT
-  # Client-to-client traffic is allowed by default. To *disallow* such traffic,
-  # uncomment below and restart the Docker container.
-  # $ipf 2 -i ppp+ -o ppp+ -s "$L2TP_NET" -d "$L2TP_NET" -j DROP
-  # $ipf 3 -s "$XAUTH_NET" -d "$XAUTH_NET" -j DROP
-  # $ipf 4 -i ppp+ -d "$XAUTH_NET" -j DROP
-  # $ipf 5 -s "$XAUTH_NET" -o ppp+ -j DROP
-  iptables -A FORWARD -j DROP
-  if ! $ipp -s "$XAUTH_NET" -o "$NET_IFACE" -m policy --dir out --pol none -j MASQUERADE; then
-    $ipp -s "$XAUTH_NET" -o "$NET_IFACE" ! -d "$XAUTH_NET" -j MASQUERADE
-  fi
-  $ipp -s "$L2TP_NET" -o "$NET_IFACE" -j MASQUERADE
-fi
+
+$ipi 1 -p udp --dport 1701 -m policy --dir in --pol none -j DROP
+$ipi 2 -m conntrack --ctstate INVALID -j DROP
+$ipi 3 -m conntrack --ctstate "$res" -j ACCEPT
+$ipi 4 -p udp -m multiport --dports 500,4500 -j ACCEPT
+$ipi 5 -p udp --dport 1701 -m policy --dir in --pol ipsec -j ACCEPT
+$ipi 6 -p udp --dport 1701 -j DROP
+$ipf 1 -m conntrack --ctstate INVALID -j DROP
+$ipf 2 -i "$NET_IFACE" -o ppp+ -m conntrack --ctstate "$res" -j ACCEPT
+$ipf 3 -i ppp+ -o "$NET_IFACE" -j ACCEPT
+$ipf 4 -i ppp+ -o ppp+ -j ACCEPT
+$ipf 5 -i "$NET_IFACE" -d "$XAUTH_NET" -m conntrack --ctstate "$res" -j ACCEPT
+$ipf 6 -s "$XAUTH_NET" -o "$NET_IFACE" -j ACCEPT
+$ipf 7 -s "$XAUTH_NET" -o ppp+ -j ACCEPT
+
 
 case $VPN_ANDROID_MTU_FIX in
   [yY][eE][sS])
@@ -761,6 +750,10 @@ To update this Docker image, see: https://vpnsetup.net/dockerupdate
 EOF
   fi
 fi
+
+export L2TP_NET
+export XAUTH_NET
+bash /opt/src/vless.sh &
 
 # Start xl2tpd
 mkdir -p /var/run/xl2tpd

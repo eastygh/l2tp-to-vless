@@ -1,12 +1,15 @@
-[English](README.md) | [中文](README-zh.md)
+[English](README.md)
 
-# IPsec VPN Server on Docker
+# IPsec VPN Server convert to VLESS VPN on Docker
 
 [![Build Status](https://github.com/hwdsl2/docker-ipsec-vpn-server/actions/workflows/main-alpine.yml/badge.svg)](https://github.com/hwdsl2/docker-ipsec-vpn-server/actions/workflows/main-alpine.yml) [![GitHub Stars](docs/images/badges/github-stars.svg)](https://github.com/hwdsl2/docker-ipsec-vpn-server/stargazers) [![Docker Stars](docs/images/badges/docker-stars.svg)](https://hub.docker.com/r/hwdsl2/ipsec-vpn-server/) [![Docker Pulls](docs/images/badges/docker-pulls.svg)](https://hub.docker.com/r/hwdsl2/ipsec-vpn-server/)
 
-Docker image to run an IPsec VPN server, with IPsec/L2TP, Cisco IPsec and IKEv2.
+Docker image to run an IPsec VPN server, with IPsec/L2TP, Cisco IPsec and IKEv2 and
+convert traffic to VLESS VPN destination.
 
-Based on Alpine 3.20 or Debian 12 with [Libreswan](https://libreswan.org) (IPsec VPN software) and [xl2tpd](https://github.com/xelerance/xl2tpd) (L2TP daemon).
+Based on Alpine 3.20 with [Libreswan](https://libreswan.org) (IPsec VPN software) and [xl2tpd](https://github.com/xelerance/xl2tpd) (L2TP daemon).
+
+Original repository: https://github.com/hwdsl2/docker-ipsec-vpn-server
 
 An IPsec VPN encrypts your network traffic, so that nobody between you and the VPN server can eavesdrop on your data as it travels via the Internet. This is especially useful when using unsecured networks, e.g. at coffee shops, airports or hotel rooms.
 
@@ -25,7 +28,7 @@ docker run \
     -p 500:500/udp \
     -p 4500:4500/udp \
     -d --privileged \
-    hwdsl2/ipsec-vpn-server
+     eastygh/l2tp-to-vless
 ```
 
 Your VPN login details will be randomly generated. See [Retrieve VPN login details](#retrieve-vpn-login-details).
