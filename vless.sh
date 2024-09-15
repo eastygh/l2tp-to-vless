@@ -13,9 +13,9 @@ function start_sing_box() {
 
   /bin/sing-box --config /opt/src/config.json run &
 
+  ip route add table "${VLESS_ROUTE_TABLE_ID}" default via 198.18.0.1
   ip rule add from "${L2TP_NET}" table "${VLESS_ROUTE_TABLE_ID}"
   ip rule add from "${XAUTH_NET}" table "${VLESS_ROUTE_TABLE_ID}"
-  ip route add table "${VLESS_ROUTE_TABLE_ID}" default via 198.18.0.1
 
 }
 
