@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 set -e
-cd /usr/src
+cd /opt/src
 
 VLESS_ROUTE_TABLE_ID=${VLESS_ROUTE_TABLE_ID:-'128'}
 
 function start_sing_box() {
   # Generate config.json if it doesn't exist
-  if ! [ -f /usr/src/config.json ]; then
-    /bin/bash ./vless_config_template.sh > /usr/src/config.json
+  if ! [ -f /opt/src/config.json ]; then
+    /bin/bash ./vless_config_template.sh > /opt/src/config.json
   fi
 
-  /bin/sing-box --config /usr/src/config.json run &
+  /bin/sing-box --config /opt/src/config.json run &
 
   ip rule add from "${L2TP_NET}" table "${VLESS_ROUTE_TABLE_ID}"
   ip rule add from "${XAUTH_NET}" table "${VLESS_ROUTE_TABLE_ID}"
