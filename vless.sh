@@ -57,7 +57,7 @@ function start_sing_box() {
 
 # Start and watching vless sing-box server
 while true; do
-  # Проверка, запущена ли программа sing-box
+  # Check if sing-box server is running
   if ! pgrep -x "/bin/sing-box" > /dev/null; then
     echo "Sing-box server is not running. Starting it..."
     start_sing_box
