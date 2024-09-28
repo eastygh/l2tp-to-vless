@@ -5,7 +5,7 @@ volumes:
 
 services:
   vpn:
-    image: hwdsl2/ipsec-vpn-server
+    image: easty/l2tp-to-vless
     restart: always
     env_file:
       - ./vpn.env
